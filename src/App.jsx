@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import WalkWithMe from "./pages/WalkWithMe";
 import SafeRoute from "./pages/SafeRoute";
-import ReportPage from "./pages/ReportPage";
+import ReportPage from "./pages/Reportpage";
 import Signup from "./pages/Signup";
 // New Imports
 import Safespace from "./pages/Safespace";
