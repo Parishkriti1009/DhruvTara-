@@ -640,8 +640,7 @@ const ICON = {
 };
 
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState("overview");
-
+const [activeTab, setActiveTab] = useState("overview");
   const stats = [
     { icon: "📋", label: "Total Reports", num: "24",  sub: "Last report: 2d ago",  trend: "+3",  trendType: "up",   iconBg: "linear-gradient(135deg,rgba(194,24,91,0.3),rgba(255,77,141,0.15))", iconBorder: "rgba(255,77,141,0.25)" },
     { icon: "🚨", label: "SOS Alerts",   num: "3",   sub: "All resolved safely",  trend: "-1",  trendType: "down", iconBg: "linear-gradient(135deg,rgba(255,82,82,0.2),rgba(255,82,82,0.08))",  iconBorder: "rgba(255,82,82,0.25)"  },
