@@ -1,19 +1,64 @@
 import { useState } from "react";
 
 const INCIDENT_TYPES = [
-  { id: "harassment", label: "Harassment", icon: "⚠️", desc: "Verbal or physical intimidation" },
-  { id: "stalking", label: "Stalking / Following", icon: "👁️", desc: "Being followed or surveilled" },
-  { id: "unsafe_area", label: "Unsafe Area", icon: "📍", desc: "Poorly lit or dangerous zone" },
-  { id: "assault", label: "Physical Assault", icon: "🚨", desc: "Physical attack or attempt" },
-  { id: "suspicious", label: "Suspicious Activity", icon: "🔍", desc: "Concerning behaviour nearby" },
+  {
+    id: "harassment",
+    label: "Harassment",
+    icon: "⚠️",
+    desc: "Verbal or physical intimidation",
+  },
+  {
+    id: "stalking",
+    label: "Stalking / Following",
+    icon: "👁️",
+    desc: "Being followed or surveilled",
+  },
+  {
+    id: "unsafe_area",
+    label: "Unsafe Area",
+    icon: "📍",
+    desc: "Poorly lit or dangerous zone",
+  },
+  {
+    id: "assault",
+    label: "Physical Assault",
+    icon: "🚨",
+    desc: "Physical attack or attempt",
+  },
+  {
+    id: "suspicious",
+    label: "Suspicious Activity",
+    icon: "🔍",
+    desc: "Concerning behaviour nearby",
+  },
   { id: "other", label: "Other", icon: "📝", desc: "Any other safety concern" },
 ];
 
 const RECENT_REPORTS = [
-  { type: "Unsafe Area", location: "Sector 18, Noida", time: "12 min ago", severity: "medium" },
-  { type: "Harassment", location: "Connaught Place, Delhi", time: "34 min ago", severity: "high" },
-  { type: "Suspicious Activity", location: "Rajouri Garden Metro", time: "1 hr ago", severity: "low" },
-  { type: "Stalking / Following", location: "Lajpat Nagar Market", time: "2 hrs ago", severity: "high" },
+  {
+    type: "Unsafe Area",
+    location: "Sector 18, Noida",
+    time: "12 min ago",
+    severity: "medium",
+  },
+  {
+    type: "Harassment",
+    location: "Connaught Place, Delhi",
+    time: "34 min ago",
+    severity: "high",
+  },
+  {
+    type: "Suspicious Activity",
+    location: "Rajouri Garden Metro",
+    time: "1 hr ago",
+    severity: "low",
+  },
+  {
+    type: "Stalking / Following",
+    location: "Lajpat Nagar Market",
+    time: "2 hrs ago",
+    severity: "high",
+  },
 ];
 
 const SEVERITY_COLORS = {
@@ -24,24 +69,61 @@ const SEVERITY_COLORS = {
 
 export default function ReportIncident() {
   const [selectedType, setSelectedType] = useState(null);
-  const [form, setForm] = useState({ location: "", description: "", anonymous: true, urgency: "normal" });
+  const [form, setForm] = useState({
+    location: "",
+    description: "",
+    anonymous: true,
+    urgency: "normal",
+  });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("report");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedType || !form.location) return;
+
     setLoading(true);
-    setTimeout(() => {
+
+    const payload = {
+      incidentType: selectedType,
+      location: form.location,
+      description: form.description,
+      anonymous: form.anonymous,
+      urgency: form.urgency,
+      createdAt: new Date().toLocaleString(),
+    };
+
+    try {
+      await fetch(
+        "https://script.google.com/macros/s/AKfycbxNree5EZOTKls3lcAmavpUmHEu7FeJ-JzZYeyVtWCViWncW8stIQW8Loq7Xy9h8iFWtQ/exec",
+        {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        },
+      );
+
       setLoading(false);
       setSubmitted(true);
-    }, 1600);
+    } catch (error) {
+      console.error("Error saving:", error);
+      setLoading(false);
+      alert("Failed to save report.");
+    }
   };
 
   const handleReset = () => {
     setSubmitted(false);
     setSelectedType(null);
-    setForm({ location: "", description: "", anonymous: true, urgency: "normal" });
+    setForm({
+      location: "",
+      description: "",
+      anonymous: true,
+      urgency: "normal",
+    });
   };
 
   if (submitted) {
@@ -53,12 +135,16 @@ export default function ReportIncident() {
           </div>
           <h2 style={styles.successTitle}>Report Submitted</h2>
           <p style={styles.successSubtitle}>
-            Your report has been received. Our community safety team will review it shortly.
-            {form.anonymous && " You reported anonymously — your identity is protected."}
+            Your report has been received. Our community safety team will review
+            it shortly.
+            {form.anonymous &&
+              " You reported anonymously — your identity is protected."}
           </p>
           <div style={styles.successMeta}>
             <span style={styles.metaTag}>📍 {form.location}</span>
-            <span style={styles.metaTag}>🔖 {INCIDENT_TYPES.find(t => t.id === selectedType)?.label}</span>
+            <span style={styles.metaTag}>
+              🔖 {INCIDENT_TYPES.find((t) => t.id === selectedType)?.label}
+            </span>
           </div>
           <button style={styles.btnPrimary} onClick={handleReset}>
             Submit Another Report
@@ -81,10 +167,13 @@ export default function ReportIncident() {
 
       {/* Tabs */}
       <div style={styles.tabs}>
-        {["report", "recent"].map(tab => (
+        {["report", "recent"].map((tab) => (
           <button
             key={tab}
-            style={{ ...styles.tab, ...(activeTab === tab ? styles.tabActive : {}) }}
+            style={{
+              ...styles.tab,
+              ...(activeTab === tab ? styles.tabActive : {}),
+            }}
             onClick={() => setActiveTab(tab)}
           >
             {tab === "report" ? "📋 Report Incident" : "🕒 Recent Reports"}
@@ -94,12 +183,13 @@ export default function ReportIncident() {
 
       {activeTab === "report" ? (
         <div style={styles.formContainer}>
-
           {/* Step 1: Incident Type */}
           <div style={styles.section}>
-            <div style={styles.stepLabel}><span style={styles.stepNum}>01</span> Type of Incident</div>
+            <div style={styles.stepLabel}>
+              <span style={styles.stepNum}>01</span> Type of Incident
+            </div>
             <div style={styles.typeGrid}>
-              {INCIDENT_TYPES.map(type => (
+              {INCIDENT_TYPES.map((type) => (
                 <button
                   key={type.id}
                   style={{
@@ -111,7 +201,9 @@ export default function ReportIncident() {
                   <span style={styles.typeIcon}>{type.icon}</span>
                   <span style={styles.typeLabel}>{type.label}</span>
                   <span style={styles.typeDesc}>{type.desc}</span>
-                  {selectedType === type.id && <div style={styles.typeCheck}>✓</div>}
+                  {selectedType === type.id && (
+                    <div style={styles.typeCheck}>✓</div>
+                  )}
                 </button>
               ))}
             </div>
@@ -119,36 +211,44 @@ export default function ReportIncident() {
 
           {/* Step 2: Location */}
           <div style={styles.section}>
-            <div style={styles.stepLabel}><span style={styles.stepNum}>02</span> Location</div>
+            <div style={styles.stepLabel}>
+              <span style={styles.stepNum}>02</span> Location
+            </div>
             <div style={styles.inputWrapper}>
               <span style={styles.inputIcon}>📍</span>
               <input
                 style={styles.input}
                 placeholder="Enter area, landmark, or address..."
                 value={form.location}
-                onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, location: e.target.value }))
+                }
               />
             </div>
           </div>
 
           {/* Step 3: Urgency */}
           <div style={styles.section}>
-            <div style={styles.stepLabel}><span style={styles.stepNum}>03</span> Urgency Level</div>
+            <div style={styles.stepLabel}>
+              <span style={styles.stepNum}>03</span> Urgency Level
+            </div>
             <div style={styles.urgencyRow}>
               {[
                 { val: "low", label: "Low", color: "#4CAF50" },
                 { val: "normal", label: "Normal", color: "#FFB74D" },
                 { val: "high", label: "Emergency", color: "#FF4D8D" },
-              ].map(u => (
+              ].map((u) => (
                 <button
                   key={u.val}
                   style={{
                     ...styles.urgencyBtn,
-                    borderColor: form.urgency === u.val ? u.color : "rgba(194,24,91,0.2)",
-                    background: form.urgency === u.val ? `${u.color}18` : "transparent",
+                    borderColor:
+                      form.urgency === u.val ? u.color : "rgba(194,24,91,0.2)",
+                    background:
+                      form.urgency === u.val ? `${u.color}18` : "transparent",
                     color: form.urgency === u.val ? u.color : "#F8BBD0",
                   }}
-                  onClick={() => setForm(f => ({ ...f, urgency: u.val }))}
+                  onClick={() => setForm((f) => ({ ...f, urgency: u.val }))}
                 >
                   <span style={{ ...styles.urgencyDot, background: u.color }} />
                   {u.label}
@@ -159,13 +259,18 @@ export default function ReportIncident() {
 
           {/* Step 4: Description */}
           <div style={styles.section}>
-            <div style={styles.stepLabel}><span style={styles.stepNum}>04</span> Description <span style={styles.optionalTag}>Optional</span></div>
+            <div style={styles.stepLabel}>
+              <span style={styles.stepNum}>04</span> Description{" "}
+              <span style={styles.optionalTag}>Optional</span>
+            </div>
             <textarea
               style={styles.textarea}
               placeholder="Describe what happened — any details help our team respond better..."
               rows={4}
               value={form.description}
-              onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, description: e.target.value }))
+              }
             />
           </div>
 
@@ -174,13 +279,29 @@ export default function ReportIncident() {
             <div style={styles.toggleRow}>
               <div>
                 <div style={styles.toggleTitle}>🔒 Stay Anonymous</div>
-                <div style={styles.toggleSub}>Your identity will not be shared with anyone</div>
+                <div style={styles.toggleSub}>
+                  Your identity will not be shared with anyone
+                </div>
               </div>
               <div
-                style={{ ...styles.toggle, background: form.anonymous ? "linear-gradient(135deg,#C2185B,#FF4D8D)" : "rgba(194,24,91,0.2)" }}
-                onClick={() => setForm(f => ({ ...f, anonymous: !f.anonymous }))}
+                style={{
+                  ...styles.toggle,
+                  background: form.anonymous
+                    ? "linear-gradient(135deg,#C2185B,#FF4D8D)"
+                    : "rgba(194,24,91,0.2)",
+                }}
+                onClick={() =>
+                  setForm((f) => ({ ...f, anonymous: !f.anonymous }))
+                }
               >
-                <div style={{ ...styles.toggleThumb, transform: form.anonymous ? "translateX(20px)" : "translateX(0)" }} />
+                <div
+                  style={{
+                    ...styles.toggleThumb,
+                    transform: form.anonymous
+                      ? "translateX(20px)"
+                      : "translateX(0)",
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -189,21 +310,20 @@ export default function ReportIncident() {
           <button
             style={{
               ...styles.submitBtn,
-              opacity: (!selectedType || !form.location) ? 0.5 : 1,
-              cursor: (!selectedType || !form.location) ? "not-allowed" : "pointer",
+              opacity: !selectedType || !form.location ? 0.5 : 1,
+              cursor:
+                !selectedType || !form.location ? "not-allowed" : "pointer",
             }}
             onClick={handleSubmit}
             disabled={!selectedType || !form.location}
           >
-            {loading ? (
-              <span style={styles.loader} />
-            ) : (
-              <>🚨 Submit Report</>
-            )}
+            {loading ? <span style={styles.loader} /> : <>🚨 Submit Report</>}
           </button>
 
           {(!selectedType || !form.location) && (
-            <p style={styles.hint}>Please select an incident type and enter a location to submit.</p>
+            <p style={styles.hint}>
+              Please select an incident type and enter a location to submit.
+            </p>
           )}
         </div>
       ) : (
@@ -215,10 +335,25 @@ export default function ReportIncident() {
           {RECENT_REPORTS.map((r, i) => {
             const s = SEVERITY_COLORS[r.severity];
             return (
-              <div key={i} style={{ ...styles.recentCard, background: s.bg, borderColor: s.dot + "40" }}>
+              <div
+                key={i}
+                style={{
+                  ...styles.recentCard,
+                  background: s.bg,
+                  borderColor: s.dot + "40",
+                }}
+              >
                 <div style={styles.recentTop}>
-                  <span style={{ ...styles.severityBadge, color: s.dot, borderColor: s.dot + "60" }}>
-                    <span style={{ ...styles.severityDot, background: s.dot }} />
+                  <span
+                    style={{
+                      ...styles.severityBadge,
+                      color: s.dot,
+                      borderColor: s.dot + "60",
+                    }}
+                  >
+                    <span
+                      style={{ ...styles.severityDot, background: s.dot }}
+                    />
                     {s.label}
                   </span>
                   <span style={styles.recentTime}>{r.time}</span>
@@ -228,7 +363,10 @@ export default function ReportIncident() {
               </div>
             );
           })}
-          <p style={styles.recentNote}>Reports are anonymised and reviewed by our safety team before appearing here.</p>
+          <p style={styles.recentNote}>
+            Reports are anonymised and reviewed by our safety team before
+            appearing here.
+          </p>
         </div>
       )}
     </div>
@@ -639,6 +777,3 @@ const styleEl = document.createElement("style");
 styleEl.textContent = keyframes;
 document.head.appendChild(styleEl);
 
-
-
-  

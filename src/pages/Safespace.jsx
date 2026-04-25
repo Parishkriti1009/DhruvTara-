@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+
 const safeplacesData = {
   police: [
     { id: 1, name: "Central Police Station", distance: "0.4 km", status: "24x7", badge: "Verified", phone: "100", address: "MG Road, Sector 14" },
@@ -23,6 +24,7 @@ const safeplacesData = {
   ],
 };
 
+
 const categories = [
   { key: "police", label: "Police Stations", icon: "🚔", color: "#FF4D8D" },
   { key: "hospital", label: "Hospitals", icon: "🏥", color: "#FF80AB" },
@@ -30,13 +32,16 @@ const categories = [
   { key: "transport", label: "Transport Points", icon: "🚇", color: "#AD1457" },
 ];
 
+
 const savedInitial = {};
+
 
 export default function SafeSpace() {
   const [activeCategory, setActiveCategory] = useState("police");
   const [searchValue, setSearchValue] = useState("");
   const [saved, setSaved] = useState(savedInitial);
   const [navigating, setNavigating] = useState(null);
+
 
   const places = safeplacesData[activeCategory] || [];
   const filtered = places.filter(
@@ -45,12 +50,15 @@ export default function SafeSpace() {
       p.address.toLowerCase().includes(searchValue.toLowerCase())
   );
 
+
   const toggleSave = (id) => setSaved((prev) => ({ ...prev, [id]: !prev[id] }));
+
 
   const handleNavigate = (id) => {
     setNavigating(id);
     setTimeout(() => setNavigating(null), 1800);
   };
+
 
   return (
     <div style={styles.root}>
@@ -73,6 +81,7 @@ export default function SafeSpace() {
         ))}
       </div>
 
+
       <div style={styles.container}>
         {/* Header */}
         <div style={styles.header}>
@@ -81,6 +90,7 @@ export default function SafeSpace() {
             <p style={styles.subtitle}>Dhruv Tara – The Guiding Star</p>
           </div>
         </div>
+
 
         {/* Search */}
         <div style={styles.searchWrap}>
@@ -105,12 +115,14 @@ export default function SafeSpace() {
           )}
         </div>
 
+
         {/* Location Banner */}
         <div style={styles.locationBanner}>
           <span style={{ fontSize: 13 }}>📡</span>
           <span style={styles.locationText}>Detecting your location… <strong style={{ color: "#FF80AB" }}>New Delhi, India</strong></span>
           <span style={styles.locationDot} />
         </div>
+
 
         {/* Categories */}
         <div style={styles.categoryRow}>
@@ -141,6 +153,7 @@ export default function SafeSpace() {
           ))}
         </div>
 
+
         {/* Results header */}
         <div style={styles.resultsHeader}>
           <span style={styles.resultsTitle}>
@@ -148,6 +161,7 @@ export default function SafeSpace() {
           </span>
           <span style={styles.resultsBadge}>{filtered.length} nearby</span>
         </div>
+
 
         {/* Cards */}
         <div style={styles.cardList}>
@@ -169,6 +183,7 @@ export default function SafeSpace() {
           ))}
         </div>
 
+
         {/* Emergency strip */}
         <div style={styles.emergencyStrip}>
           <span style={styles.emergencyPulse} />
@@ -177,6 +192,7 @@ export default function SafeSpace() {
           <a href="tel:1091" style={styles.emergencyBtnAlt}>👩 Women Helpline 1091</a>
         </div>
       </div>
+
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
@@ -199,8 +215,10 @@ export default function SafeSpace() {
   );
 }
 
+
 function PlaceCard({ place, saved, onSave, navigating, onNavigate }) {
   const [hovered, setHovered] = useState(false);
+
 
   return (
     <div
@@ -228,6 +246,7 @@ function PlaceCard({ place, saved, onSave, navigating, onNavigate }) {
         </div>
       </div>
 
+
       {/* Meta row */}
       <div style={styles.cardMeta}>
         <span style={styles.distance}>🚶 {place.distance}</span>
@@ -235,6 +254,7 @@ function PlaceCard({ place, saved, onSave, navigating, onNavigate }) {
           {place.badge === "Verified" ? "✓ Verified" : "🛡 Safe"}
         </span>
       </div>
+
 
       {/* Actions */}
       <div style={styles.cardActions}>
@@ -252,6 +272,7 @@ function PlaceCard({ place, saved, onSave, navigating, onNavigate }) {
           {navigating ? "📡 Routing…" : "🗺 Navigate"}
         </button>
 
+
         <a
           href={`tel:${place.phone}`}
           style={styles.actionBtnOutline}
@@ -266,6 +287,7 @@ function PlaceCard({ place, saved, onSave, navigating, onNavigate }) {
         >
           📞 Call
         </a>
+
 
         <button
           onClick={onSave}
@@ -287,6 +309,7 @@ function PlaceCard({ place, saved, onSave, navigating, onNavigate }) {
     </div>
   );
 }
+
 
 const styles = {
   root: {
@@ -638,3 +661,4 @@ const styles = {
     gap: 4,
   },
 };
+
