@@ -11,7 +11,7 @@ import Profile from "./pages/Profile";
 
 
 // 1. ADD THIS IMPORT
-import Capture from "./components/Capture";
+import Capture from "./pages/Capture";
 
 
 export default function App() {
